@@ -1,0 +1,12 @@
+[workspace]
+resovler = "2"
+members = [
+    "ping-core",
+    "ping-sync",
+    "ping-tokio",
+]
+
+[workspace.dependencies]
+color-eyre = "0.6.3"
+socket2 = { version = "0.5.8", features = ["all"] }
+

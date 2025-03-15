@@ -1,0 +1,10 @@
+[package]
+name = "ping-sync"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ping-core = { path = "../ping-core" }
+color-eyre =  { workspace = true }
+socket2 = { workspace = true }
+ctrlc = "3.4.5"

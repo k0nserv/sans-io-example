@@ -1,0 +1,11 @@
+[package]
+name = "ping-tokio"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ping-core = { path = "../ping-core" }
+
+tokio = { version = "1.44.0", features =["full"] }
+socket2 = { workspace = true }
+color-eyre =  { workspace = true }
