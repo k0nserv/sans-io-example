@@ -1,7 +1,7 @@
 use std::net::SocketAddrV4;
 use std::time::{Duration, Instant};
 
-use ping_core::{Event, Input, Output, Ping};
+use ping_core::{BasicContext, Event, Input, Output, Ping};
 use socket::Socket;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::signal;
@@ -15,6 +15,7 @@ pub type Result<T> = color_eyre::Result<T>;
 async fn main() -> Result<()> {
     let addr: SocketAddrV4 = "8.8.8.8:0".parse()?;
     let mut socket = Socket::new_icmp_v4(addr)?;
+    let mut context = BasicContext::default();
     let mut ping = Ping::new(*addr.ip(), Duration::from_millis(1000));
     let ctrl_c = signal::ctrl_c();
     pin!(ctrl_c);
@@ -43,14 +44,16 @@ async fn main() -> Result<()> {
             let input = last_recv
                 .take()
                 .unwrap_or_else(|| Input::Time(Instant::now()));
-            let output = ping.handle_input(input)?;
+            let output = ping.handle_input(input, &mut context)?;
 
             match output {
                 Output::Event(event) => {
                     handle_event(event, addr);
                 }
                 Output::Send(vec) => {
-                    socket.write(&vec).await?;
+                    // TODO: Handle written bytes maybe. We write less than MTU, so it should be
+                    // fine.
+                    let _ = socket.write(&vec).await?;
                 }
                 Output::Timeout(instant) => {
                     break instant;

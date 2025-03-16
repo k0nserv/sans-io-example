@@ -6,7 +6,7 @@ use std::time::{Duration, Instant};
 use color_eyre::eyre::Result;
 use socket2::{Domain, Protocol, SockAddr, Socket};
 
-use ping_core::{self as ping, Event, Input, Ping};
+use ping_core::{self as ping, BasicContext, Event, Input, Ping};
 
 static STOP: AtomicBool = AtomicBool::new(false);
 
@@ -14,6 +14,7 @@ fn main() -> Result<()> {
     let socket = create_socket()?;
     let addr: SocketAddrV4 = "8.8.8.8:0".parse()?;
     let sock_addr = SockAddr::from(addr);
+    let mut context = BasicContext::default();
     let mut ping = Ping::new(*addr.ip(), Duration::from_millis(1000));
     ctrlc::set_handler(move || {
         STOP.store(true, Ordering::Relaxed);
@@ -45,7 +46,7 @@ fn main() -> Result<()> {
             let input = last_recv
                 .take()
                 .unwrap_or_else(|| Input::Time(Instant::now()));
-            let output = ping.handle_input(input)?;
+            let output = ping.handle_input(input, &mut context)?;
 
             match output {
                 ping::Output::Event(event) => {
