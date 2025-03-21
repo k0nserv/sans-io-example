@@ -22,7 +22,7 @@ async fn main() -> Result<()> {
 
     let mut buf = [0u8; 1500];
     let mut timeout_until = Instant::now();
-    let mut last_recv;
+    let mut last_recv: Option<Input<'_>>;
     loop {
         let timeout = (timeout_until - Instant::now()).max(Duration::from_millis(1));
 
@@ -53,7 +53,7 @@ async fn main() -> Result<()> {
                 Output::Send(vec) => {
                     // TODO: Handle written bytes maybe. We write less than MTU, so it should be
                     // fine.
-                    let _ = socket.write(&vec).await?;
+                    let _ = socket.write(vec).await?;
                 }
                 Output::Timeout(instant) => {
                     break instant;

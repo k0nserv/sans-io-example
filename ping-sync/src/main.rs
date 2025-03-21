@@ -22,7 +22,7 @@ fn main() -> Result<()> {
 
     let mut buf: [MaybeUninit<u8>; 1500] = [MaybeUninit::uninit(); 1500];
     let mut timeout_until = Instant::now();
-    let mut last_recv;
+    let mut last_recv: Option<Input<'_>>;
     while !STOP.load(Ordering::Relaxed) {
         let timeout = (timeout_until - Instant::now()).max(Duration::from_millis(1));
 
@@ -53,7 +53,7 @@ fn main() -> Result<()> {
                     handle_event(event, addr);
                 }
                 ping::Output::Send(vec) => {
-                    socket.send_to(&vec, &sock_addr)?;
+                    socket.send_to(vec, &sock_addr)?;
                 }
                 ping::Output::Timeout(instant) => {
                     break instant;

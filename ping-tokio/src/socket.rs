@@ -42,10 +42,11 @@ impl AsyncRead for Socket {
         match guard.try_io(|inner| inner.get_ref().recv_from(unfilled)) {
             Ok(Ok((len, _))) => {
                 buf.advance(len);
-                return Poll::Ready(Ok(()));
+
+                Poll::Ready(Ok(()))
             }
-            Ok(Err(err)) => return Poll::Ready(Err(err)),
-            Err(_would_block) => return Poll::Pending,
+            Ok(Err(err)) => Poll::Ready(Err(err)),
+            Err(_would_block) => Poll::Pending,
         }
     }
 }
@@ -59,8 +60,8 @@ impl AsyncWrite for Socket {
         let mut guard = ready!(self.inner.poll_write_ready(cx))?;
 
         match guard.try_io(|inner| inner.get_ref().send_to(buf, &self.addr)) {
-            Ok(result) => return Poll::Ready(result),
-            Err(_would_block) => return Poll::Pending,
+            Ok(result) => Poll::Ready(result),
+            Err(_would_block) => Poll::Pending,
         }
     }
 

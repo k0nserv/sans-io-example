@@ -207,6 +207,7 @@ impl Ping {
     }
 }
 
+#[cfg(test)]
 impl<'b> Output<'b> {
     fn unwrap_send(self) -> &'b [u8] {
         match self {
@@ -224,6 +225,7 @@ impl<'b> Output<'b> {
 }
 
 impl Event {
+    #[cfg(test)]
     fn unwrap_result(self) -> (u16, Option<Duration>) {
         match self {
             Event::Response { seq_num, rtt } => (seq_num, rtt),
