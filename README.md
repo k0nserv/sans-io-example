@@ -19,7 +19,7 @@ $ cargo build && sudo target/debug/ping-sync
 and for the Tokio version:
 
 ```sh
-$ cargo build && sudo target/debug/ping-sync
+$ cargo build && sudo target/debug/ping-tokio
 ```
 
 ## Slides
